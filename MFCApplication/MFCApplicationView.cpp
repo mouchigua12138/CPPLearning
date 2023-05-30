@@ -227,15 +227,34 @@ void CMFCApplicationView::DrawLine(CDC* pDC) {
 
 void CMFCApplicationView::DrawLine(Line l, CDC* pDC) {
 
-	Point pt0 = caculateGeoToDraw(l.pt[0]);
+	//Point pt0 = caculateGeoToDraw(l.pt[0]);
 
-	pDC->MoveTo(pt0.x, pt0.y);
+	//pDC->MoveTo(pt0.x, pt0.y);
 
-	for (int i = 1; i < l.size; i++) {
+	//for (int i = 1; i < l.size; i++) {
 
-		Point pt = caculateGeoToDraw(l.pt[i]);
-		pDC->LineTo(pt.x, pt.y);
+	//	Point pt = caculateGeoToDraw(l.pt[i]);
+	//	pDC->LineTo(pt.x, pt.y);
+	//}
+
+	Point* pGeo = l.pt;
+	Point* pDraw = new Point[l.size];
+
+	for (int i = 0; i < l.size; i++) {
+		pDraw[i] = caculateGeoToDraw(pGeo[i]);
 	}
+
+	CPoint* pClient = new CPoint[l.size];
+
+	for (int i = 0; i < l.size; i++) {
+		pClient[i].x = pDraw[i].x;
+		pClient[i].y = pDraw[i].y;
+	}
+
+	pDC->Polyline(pClient, l.size);//使用Polyline()函数绘图可提升效率
+
+	delete[]pDraw;
+	delete[]pClient;
 }
 
 void CMFCApplicationView::DrawPolygonLine(CDC* pDC) {
@@ -270,18 +289,37 @@ void CMFCApplicationView::DrawPolygonLine(CDC* pDC) {
 
 void CMFCApplicationView::DrawPolygonLine(PolygonLine l, CDC* pDC) {
 
-	Point pt0 = caculateGeoToDraw(l.pt[0]);
+	//Point pt0 = caculateGeoToDraw(l.pt[0]);
 
-	pDC->MoveTo(pt0.x, pt0.y);
+	//pDC->MoveTo(pt0.x, pt0.y);
 	//pDC->MoveTo((l.pt[0].x - x0) * nClientRect.right  / (x - x0) * 0.8 + 0.1 * nClientRect.right,
 	//	        (l.pt[0].y - y0) * nClientRect.bottom / (y - y0) * 0.8 + 0.1 * nClientRect.bottom);
 
-	for (int i = 1; i < l.size; i++) {
+	//for (int i = 1; i < l.size; i++) {
 		//pDC->LineTo((l.pt[i].x - x0) * nClientRect.right  / (x - x0) * 0.8 + 0.1 * nClientRect.right,
 		//	        (l.pt[i].y - y0) * nClientRect.bottom / (y - y0) * 0.8 + 0.1 * nClientRect.bottom);
-		Point pt = caculateGeoToDraw(l.pt[i]);
-		pDC->LineTo(pt.x, pt.y);
+	//	Point pt = caculateGeoToDraw(l.pt[i]);
+	//	pDC->LineTo(pt.x, pt.y);
+	//}
+
+	Point* pGeo = l.pt;
+	Point* pDraw = new Point[l.size];
+
+	for (int i = 0; i < l.size; i++) {
+		pDraw[i] = caculateGeoToDraw(pGeo[i]);
 	}
+
+	CPoint* pClient = new CPoint[l.size];
+
+	for (int i = 0; i < l.size; i++) {
+		pClient[i].x = pDraw[i].x;
+		pClient[i].y = pDraw[i].y;
+	}
+
+	pDC->Polyline(pClient, l.size);//使用Polyline()函数绘图可提升效率
+
+	delete[]pDraw;
+	delete[]pClient;
 }
 
 void CMFCApplicationView::DrawPicture() {
