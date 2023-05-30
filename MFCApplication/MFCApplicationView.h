@@ -67,11 +67,12 @@ protected:
 	std::vector<Line>        vl;//折线向量
 	std::vector<PolygonLine> vp;//面向量
 
-	CRect   nClientRect;//视窗窗口
-	CPen    BlackPen;   //默认黑笔
-	CDC     memDC;      //画在内存上
+	CRect   nClientRect;   //视窗窗口
+	CPen    BlackPen;      //默认黑笔
+	CDC     memDC;         //画在内存上
+	CDC     memDCRButton;
 	CBitmap bitmap;
-	CBitmap oldBitmap;
+	CBitmap bitmapRButton;
 	Point   pointTemp;
 
 	double x,     x0,     y,     y0;

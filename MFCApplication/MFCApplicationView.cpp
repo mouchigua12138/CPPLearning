@@ -69,7 +69,7 @@ CMFCApplicationView::CMFCApplicationView() noexcept : BlackPen(PS_SOLID, 1, RGB(
 CMFCApplicationView::~CMFCApplicationView()
 {
 	delete this->dlgPoint;
-	oldBitmap.DeleteObject();
+	
 }
 
 BOOL CMFCApplicationView::PreCreateWindow(CREATESTRUCT& cs)
@@ -688,24 +688,49 @@ void CMFCApplicationView::OnMouseMove(UINT nFlags, CPoint point)
 		Point LT = caculateGeoToDraw(lt);
 		Point RB = caculateGeoToDraw(rb);
 
-		/*以下为拉框的程序，但由于个人不太喜欢，没有采用
-		* 没有使用FillRect(),而是直接使用MoveTo()与LineTo()绘制矩形
-		*/
+		CDC* pDC = GetDC();
 
-		//DrawPicture();
+		memDCRButton.CreateCompatibleDC(pDC);
+		bitmapRButton.CreateCompatibleBitmap(pDC, nClientRect.Width(), nClientRect.Height());
 
-		//CDC* pDC = GetDC();
+		if (memDCRButton.GetSafeHdc() != NULL) {
+			CBitmap* pOldBitmap = (CBitmap*)memDCRButton.SelectObject(&bitmapRButton);
+			//oldBitmap = *(CBitmap*)memDC.SelectObject(&bitmap);
 
-		//CPen pen(PS_DASH, 1, RGB(0, 0, 255));
-		//pDC->SelectObject(&pen);
+			DrawPicture(&memDCRButton);
 
-		//pDC->MoveTo(LT.x, LT.y);
-		//pDC->LineTo(LT.x, RB.y);
-		//pDC->LineTo(RB.x, RB.y);
-		//pDC->LineTo(RB.x, LT.y);
-		//pDC->LineTo(LT.x, LT.y);
+			CPen pen(PS_DASHDOTDOT, 1, RGB(0, 0, 255));
+			memDCRButton.SelectObject(&pen);
 
-		//ReleaseDC(pDC);
+			memDCRButton.MoveTo(LT.x, LT.y);
+			memDCRButton.LineTo(LT.x, RB.y);
+			memDCRButton.LineTo(RB.x, RB.y);
+			memDCRButton.LineTo(RB.x, LT.y);
+			memDCRButton.LineTo(LT.x, LT.y);
+
+			pDC->BitBlt(0, 0, nClientRect.Width(), nClientRect.Height(), &memDCRButton, 0, 0, SRCCOPY);//将位图拷贝入视图
+		}
+		else {//如果位图未成功打开
+			ClearDraw(pDC);
+			pDC->SetTextColor(RGB(100, 100, 255));
+			if (isFly == true)pDC->TextOutW(5, 0, L"已开启漫游状态");
+			pDC->SetTextColor(RGB(0, 0, 0));
+
+			if (!v.empty())DrawPoint(pDC);
+			if (!vl.empty())DrawLine(pDC);
+			if (!vp.empty())DrawPolygonLine(pDC);
+
+			pDC->MoveTo(LT.x, LT.y);
+			pDC->LineTo(LT.x, RB.y);
+			pDC->LineTo(RB.x, RB.y);
+			pDC->LineTo(RB.x, LT.y);
+			pDC->LineTo(LT.x, LT.y);
+		}
+
+		memDCRButton.DeleteDC();
+		bitmapRButton.DeleteObject();//回收GDI
+
+		ReleaseDC(pDC);
 	}
 
 	if (isFly == true && isLDown == true) {
@@ -808,16 +833,16 @@ void CMFCApplicationView::OnRButtonDown(UINT nFlags, CPoint point)
 	Point pt = { point.x, point.y };
 	RDown = caculateDrawToGeo(pt);
 
-	CDC* pDC = GetDC();
-	CPen Pen(PS_SOLID, 2.5, RGB(0, 0, 255));
-	pDC->SelectObject(&Pen);
+	//CDC* pDC = GetDC();
+	//CPen Pen(PS_SOLID, 2.5, RGB(0, 0, 255));
+	//pDC->SelectObject(&Pen);
 
-	pDC->MoveTo(pt.x - 10, pt.y);
-	pDC->LineTo(pt.x + 10, pt.y);
-	pDC->MoveTo(pt.x, pt.y - 10);
-	pDC->LineTo(pt.x, pt.y + 10);
+	//pDC->MoveTo(pt.x - 10, pt.y);
+	//pDC->LineTo(pt.x + 10, pt.y);
+	//pDC->MoveTo(pt.x, pt.y - 10);
+	//pDC->LineTo(pt.x, pt.y + 10);
 
-	ReleaseDC(pDC);
+	//ReleaseDC(pDC);
 
 	isRDown = true;
 
